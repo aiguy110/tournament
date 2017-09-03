@@ -27,7 +27,7 @@ class Tournament():
         if p2 in self.winner_record:
             p2 = self.winner_record[p2]
         elif p2[:4] == 'game':
-            p2 = '[Winner of {}]'.format(p1)
+            p2 = '[Winner of {}]'.format(p2)
 
         return "{}: {} vs. {}".format(game_name, p1, p2)
 
@@ -36,10 +36,10 @@ class Tournament():
         self.winner_record[game_name] = player
 
 
-    def getNextUnplayedGame(self):
+    def getNextUnplayedGame(self, exclude_games):
         """ Returns the name of the next unplayed game, or None if all games have recorded winners"""
         game_counter = 1
-        while 'game{}'.format(game_counter) in self.winner_record:
+        while 'game{}'.format(game_counter) in self.winner_record or 'game{}'.format(game_counter) in exclude_games:
             game_counter += 1
 
         if 'game{}'.format(game_counter) in self.game_dict:

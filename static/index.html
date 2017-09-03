@@ -1,14 +1,14 @@
 <script src="//ajax.googleapis.com/ajax/libs/jquery/1.9.1/jquery.min.js"></script>
 <script type=text/javascript>
   $(function() {
-    $('a#calculate').bind('click', function() {
+    setInterval(function() {
       $.getJSON('../_get_status', {}, function(data) {
         $("#table1").text(data.table1);
         $("#table2").text(data.table2);
         $("#next_up").text(data.next_up);
       });
       return false;
-    });
+    }, 1000);
   });
 </script>
 
@@ -20,9 +20,3 @@
 
 <h2>Next Up</h2>
 <p id="next_up">Unintialized</p>
-
-
-<p><input type=text size=5 name=a> +
-   <input type=text size=5 name=b> =
-   <span id=result>?</span>
-<p><a href=# id=calculate>calculate server side</a>
