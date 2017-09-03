@@ -2,17 +2,26 @@
 <script type=text/javascript>
   $(function() {
     $('a#calculate').bind('click', function() {
-      $.getJSON('_add_numbers', {
-        a: $('input[name="a"]').val(),
-        b: $('input[name="b"]').val()
-      }, function(data) {
-        $("#result").text(data.result);
+      $.getJSON('../_get_status', {}, function(data) {
+        $("#table1").text(data.table1);
+        $("#table2").text(data.table2);
+        $("#next_up").text(data.next_up);
       });
       return false;
     });
   });
 </script>
-<h1>jQuery Example</h1>
+
+<h1>Table 1</h1>
+<p id="table1">Unintialized</p>
+
+<h1>Table 2</h1>
+<p id="table2">Unintialized</p>
+
+<h2>Next Up</h2>
+<p id="next_up">Unintialized</p>
+
+
 <p><input type=text size=5 name=a> +
    <input type=text size=5 name=b> =
    <span id=result>?</span>
