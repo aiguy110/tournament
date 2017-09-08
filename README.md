@@ -2,7 +2,7 @@
 A small web app for running pool tournaments in the Florida Polytechnic dorms.
 
 ## Requirements
-* Python 3.4+
+* Python 3.4+ (might work with older versions as well)
 * Flask (python package)
 
   If you have never used the Flask package before, you can install it with
