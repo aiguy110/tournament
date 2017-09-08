@@ -2,6 +2,7 @@ class Tournament():
     def __init__(self, player_list):
         self.player_list = player_list
         self.winner_record = {}
+        self.loser_record = {}
 
         self.game_dict = {}
         self._gen_games(self.player_list)
@@ -36,13 +37,24 @@ class Tournament():
 
 
     def getPlayers(self, game_id):
-        try:
-            return self.game_dict[game_id]
-        except:
+        if game_id not in self.game_dict:
             return None
+
+        maybe_players = list(self.game_dict[game_id])
+        for p in range(len(maybe_players)):
+            while maybe_players[p] not in self.player_list:
+                maybe_players[p] = self.winner_record[maybe_players[p]]
+
+        return maybe_players # definitely now
 
     def setWinner(self, game_id, player):
         self.winner_record[game_id] = player
+        both_players = self.getPlayers(game_id)
+        both_players.remove(player)
+        self.loser_record[game_id] = both_players[0]
+
+    def hasLost(self, player):
+        return player in self.loser_record.values()
 
 
     def getNextUnplayedGame(self, exclude_games):

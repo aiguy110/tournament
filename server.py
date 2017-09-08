@@ -1,23 +1,31 @@
 from flask import Flask, jsonify, render_template, send_from_directory, redirect, request
 from tournament import Tournament
 from threading import Thread
-
+from random import shuffle
 
 player_list = []
 with open('players.txt', 'r') as f:
     for line in f:
         player_list.append(line.strip())
+shuffle(player_list)
+
 t = Tournament(player_list)
 
 # This defines the format and is immedeately over written
 play_status = {
                 'table1': {'game_id': 'game1', 'players': ['Player1', 'Player2']},
                 'table2': {'game_id': 'game2', 'players': ['Player3', 'Player4']},
-                'next_up': {'game_id': 'game3', 'text':'[Winner of game1] vs. [Winner of game2]'},
-                'players': player_list
+                'next_up': {'game_id': 'game3', 'players':'[Winner of game1] vs. [Winner of game2]'},
+                'all_players': {
+                    'name': 'Player1', 'has_lost':False,
+                    'name': 'Player2', 'has_lost':False,
+                    'name': 'Player3', 'has_lost':False,
+                    'name': 'Player4', 'has_lost':False,
+                }
                }
 def update_play_status(tournament, table_winner=None):
     if table_winner != None and table_winner != 'no_winner':
+        # For the table cards
         try:
             table_id, winner_num = table_winner
             winner_id = play_status[table_id]['players'][winner_num]
@@ -27,22 +35,32 @@ def update_play_status(tournament, table_winner=None):
                 'game_id': new_game,
                 'players': t.getNames(new_game)
             }
-        except:
-            new_game = {'game_id': 'no_game', 'players':None}
-            play_status[table_id] = {
-                'game_id': new_game,
-                'players': None
-            }
+        except Exception as e:
+            raise(e)
+            # print(e)
+            # new_game = {'game_id': 'no_game', 'players':None}
+            # play_status[table_id] = {
+            #     'game_id': new_game,
+            #     'players': None
+            # }
 
     for table in ['table1', 'table2']:
         play_status[table]['players'] = t.getNames(play_status[table]['game_id'])
 
+    # For the Up Next card
     on_deck = t.getNextUnplayedGame(exclude_games=[play_status['table1']['game_id'], play_status['table2']['game_id']])
     if on_deck is not None:
         player_names = t.getNames(on_deck)
-        play_status['next_up'] = {'game_id':on_deck, 'text': '{} vs. {}'.format(player_names[0], player_names[1])}
+        play_status['next_up'] = {'game_id':on_deck, 'players': player_names}
     else:
-        play_status['next_up'] = {'game_id':on_deck, 'text': ''}
+        play_status['next_up'] = {'game_id':None, 'players': []}
+
+    # For the players list
+    play_status['all_players'] = []
+    for player in sorted(player_list):
+        player_li = {'name': player, 'has_lost': t.hasLost(player)}
+        play_status['all_players'].append(player_li)
+
 
 update_play_status(t)
 
@@ -63,12 +81,6 @@ def update_status():
 
     return jsonify(play_status)
 
-
-
-    pretty_status = {}
-    for key in play_status:
-        pretty_status[key] = t.getGameString(play_status[key])
-    return jsonify(pretty_status)
 
 @app.route('/')
 def root():
