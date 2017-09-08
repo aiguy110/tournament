@@ -12,28 +12,37 @@ class Tournament():
         while len(need_to_play) != 1 :
             p1 = need_to_play.pop(0)
             p2 = need_to_play.pop(0)
-            game_name = 'game'+str(game_counter)
-            self.game_dict[game_name] = (p1, p2)
+            game_id = 'game'+str(game_counter)
+            self.game_dict[game_id] = (p1, p2)
             game_counter += 1
-            need_to_play.insert(len(need_to_play), game_name)
+            need_to_play.insert(len(need_to_play), game_id)
 
-    def getGameString(self, game_name):
-        p1, p2 = self.game_dict[game_name]
-        if p1 in self.winner_record:
-            p1 = self.winner_record[p1]
-        elif p1[:4] == 'game':
-            p1 = '[Winner of {}]'.format(p1)
+    def getNames(self, game_id):
+        try:
+            p1, p2 = self.game_dict[game_id]
+            if p1 in self.winner_record:
+                p1 = self.winner_record[p1]
+            elif p1[:4] == 'game':
+                p1 = '[Winner of {}]'.format(p1)
 
-        if p2 in self.winner_record:
-            p2 = self.winner_record[p2]
-        elif p2[:4] == 'game':
-            p2 = '[Winner of {}]'.format(p2)
+            if p2 in self.winner_record:
+                p2 = self.winner_record[p2]
+            elif p2[:4] == 'game':
+                p2 = '[Winner of {}]'.format(p2)
 
-        return "{}: {} vs. {}".format(game_name, p1, p2)
+            return (p1, p2)
+        except:
+            return None
 
 
-    def setWinner(self, game_name, player):
-        self.winner_record[game_name] = player
+    def getPlayers(self, game_id):
+        try:
+            return self.game_dict[game_id]
+        except:
+            return None
+
+    def setWinner(self, game_id, player):
+        self.winner_record[game_id] = player
 
 
     def getNextUnplayedGame(self, exclude_games):
